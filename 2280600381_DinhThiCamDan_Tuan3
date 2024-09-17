@@ -1,0 +1,153 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace BT_Buoi3
+{
+    public partial class frmStudent : Form
+    {
+        public frmStudent()
+        {
+            InitializeComponent();
+        }
+
+        private void textBox3_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lvStudent_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            //tạo một listviewitem => dòng dữ liệu
+            ListViewItem lvi = new ListViewItem (txtFirstName.Text);
+            lvi.SubItems.Add (txtLastName.Text);
+            lvi.SubItems.Add (txtPhone.Text);
+            //Đưa dòng dữ liệu vào listview
+            lvStudent.Items.Add(lvi);
+        }
+
+        private void btnRemove_Click(object sender, EventArgs e)
+        {
+            if ( lvStudent.SelectedItems.Count > 0)
+            {
+                foreach (ListViewItem item in lvStudent.SelectedItems)
+                {
+                    lvStudent.Items.Remove (item);
+                }    
+            }
+            else
+            {
+                MessageBox.Show("vui lòng chọn một  mục để xóa !");
+            } 
+                
+        }
+
+        private void btnEdit_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtLastName.Text) &&
+               !string.IsNullOrEmpty(txtFirstName.Text) &&
+               !string.IsNullOrEmpty(txtPhone.Text))
+            {
+                ListViewItem SelectedItem = lvStudent.SelectedItems[0];
+                SelectedItem.SubItems[0].Text = txtLastName.Text;
+                SelectedItem.SubItems[1].Text = txtFirstName.Text;
+                SelectedItem.SubItems[2].Text = txtPhone.Text;
+
+                txtLastName.Clear();
+                txtFirstName.Clear();
+                txtPhone.Clear();
+            }
+           else
+            {
+                MessageBox.Show("Vui lòng chọn và nhập đủ thông tin");
+            }
+        }
+
+        private void lblLastName_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtLastName_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblFirstName_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtFirstName_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lblPhone_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void txtPhone_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void lvStudent_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAdd_Click(object sender, EventArgs e)
+        {
+            if (!string.IsNullOrEmpty(txtLastName.Text) &&
+                !string.IsNullOrEmpty(txtFirstName.Text) &&
+                !string.IsNullOrEmpty(txtPhone.Text))
+            {
+                string[] row = { txtLastName.Text, txtFirstName.Text, txtPhone.Text };
+                var listViewItem = new ListViewItem(row);
+                lvStudent.Items.Add(listViewItem);
+                txtLastName.Clear();
+                txtFirstName.Clear();
+                txtPhone.Clear();
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng nhập đủ thông tin !");
+            }
+        }
+
+        private void lvStudent_ColumnWidthChanged(object sender, ColumnWidthChangedEventArgs e)
+        {
+            if (lvStudent.SelectedItems.Count > 0)
+            {
+                ListViewItem SelectedItem = lvStudent.SelectedItems[0];
+                txtLastName.Text = SelectedItem.SubItems[0].Text;
+                txtFirstName.Text = SelectedItem.SubItems[1].Text;
+                txtPhone.Text = SelectedItem.SubItems[2].Text;
+            }
+        }
+
+        private void txtFirstName_TextChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void frmStudent_Load(object sender, EventArgs e)
+        {
+           
+        }
+    }
+}
