@@ -1,0 +1,269 @@
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Data.Common;
+using System.Drawing;
+using System.Linq;
+using System.Runtime.Remoting.Contexts;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using BT_BUOI5_TL.Models1;
+using BT_BUOI5_TL;
+
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
+
+
+namespace BT_BUOI5_TL
+{
+    public partial class QuanLySinhVien : Form
+    {
+        public QuanLySinhVien()
+        {
+            InitializeComponent();
+            StudentContextDB context = new StudentContextDB();
+        }
+
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void dataGridView1_ColumnWidthChanged(object sender, DataGridViewColumnEventArgs e)
+        {
+
+        }
+
+        private void toolStrip1_ItemClicked(object sender, ToolStripItemClickedEventArgs e)
+        {
+
+        }
+
+        private void toolStrip1_SizeChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label5_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void quảnLýKhoaF2ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void ToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void FillcomboBox1(List<Faculty> listFalcultys)
+        {
+            this.cmbFaculty.DataSource = listFalcultys;
+            this.cmbFaculty.DisplayMember = "FacultyName";
+            this.cmbFaculty.ValueMember = "FacultyID";
+        }
+        private void BindGrid(List<Student> listStudents)
+        {
+                try
+                {
+                    dgvStudent.Rows.Clear();
+                    foreach (var item in listStudents)
+                    {
+                        int index = dgvStudent.Rows.Add();
+                        dgvStudent.Rows[index].Cells[0].Value = item.StudentID;
+                        dgvStudent.Rows[index].Cells[1].Value = item.FullName;
+                        if (item.Faculty != null)
+                        {
+                            dgvStudent.Rows[index].Cells[2].Value = item.Faculty.FacultyName;
+                        }
+                        else
+                        {
+                            dgvStudent.Rows[index].Cells[2].Value = "Chưa có khoa"; // Hoặc giá trị mặc định khác
+                        }
+
+                        dgvStudent.Rows[index].Cells[3].Value = item.AverageScore;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Có lỗi xảy ra khi hiển thị danh sách: " + ex.Message);
+                }
+            
+        }
+
+
+        private void QuanLySinhVien_Load(object sender, EventArgs e)
+        {
+            try
+            {
+                StudentContextDB context = new StudentContextDB();
+                List<Faculty> listFalcultys = context.Faculties.ToList();
+                List<Student> listStudent = context.Students.ToList();
+                FillcomboBox1(listFalcultys);
+                BindGrid(listStudent);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            LoadData();
+        }
+
+        private void cmbFaculty_SelectedIndexChanged(object sender, EventArgs e)
+        {
+        }
+
+        private void dgvStudent_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+        }
+        private void LoadData()
+        {
+            try
+            {
+                using (StudentContextDB context = new StudentContextDB())
+                {
+                    List<Faculty> listFalcultys = context.Faculties.ToList();
+                    List<Student> listStudents = context.Students.ToList();
+
+                    FillcomboBox1(listFalcultys); // Cập nhật ComboBox
+                    BindGrid(listStudents); // Cập nhật DataGridView
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra khi tải dữ liệu: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if (dgvStudent.SelectedRows.Count > 0)
+            {
+                var selectedRow = dgvStudent.SelectedRows[0];
+                var studentID = (int)selectedRow.Cells[0].Value;
+
+                using (StudentContextDB context = new StudentContextDB())
+                {
+                    var student = context.Students.FirstOrDefault(s => s.StudentID == studentID);
+                    if (student != null)
+                    {
+                        student.FullName = txtHoTen.Text;
+                        student.FacultyID = (int)cmbFaculty.SelectedValue;
+                        student.AverageScore = (decimal?)Convert.ToDecimal(txtDTB.Text);
+                        context.SaveChanges();
+                        BindGrid(context.Students.ToList());
+
+                        MessageBox.Show("Cập nhật thành công!");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn sinh viên cần cập nhật.");
+            }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            if (dgvStudent.SelectedRows.Count > 0)
+            {
+                var selectedRow = dgvStudent.SelectedRows[0];
+                var studentID = (int)selectedRow.Cells[0].Value;
+
+                using (StudentContextDB context = new StudentContextDB())
+                {
+                    var student = context.Students.FirstOrDefault(s => s.StudentID == studentID);
+                    if (student != null)
+                    {
+                        context.Students.Remove(student);
+                        context.SaveChanges();
+                        BindGrid(context.Students.ToList());
+
+                        MessageBox.Show("Xóa sinh viên thành công!");
+                    }
+                }
+            }
+            else
+            {
+                MessageBox.Show("Vui lòng chọn sinh viên cần xóa.");
+            }
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // Kiểm tra nếu các trường nhập không rỗng
+                if (string.IsNullOrWhiteSpace(txtMSSV.Text) ||
+                    string.IsNullOrWhiteSpace(txtHoTen.Text) ||
+                    string.IsNullOrWhiteSpace(txtDTB.Text))
+                {
+                    MessageBox.Show("Vui lòng điền đầy đủ thông tin sinh viên.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                // Kiểm tra xem mã sinh viên có phải là số nguyên không
+                if (!int.TryParse(txtMSSV.Text, out int MSSV))
+                {
+                    MessageBox.Show("Mã sinh viên phải là một số nguyên.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                // Kiểm tra xem điểm trung bình có phải là số không
+                if (!decimal.TryParse(txtDTB.Text, out decimal DTB))
+                {
+                    MessageBox.Show("Điểm trung bình phải là một số.", "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                string HoTen = txtHoTen.Text;
+                int FacultyID = (int)cmbFaculty.SelectedValue;
+
+                using (StudentContextDB context = new StudentContextDB())
+                {
+                    // Kiểm tra nếu sinh viên đã tồn tại
+                    var existingStudent = context.Students.FirstOrDefault(s => s.StudentID == MSSV);
+                    if (existingStudent != null)
+                    {
+                        MessageBox.Show("Sinh viên với mã này đã tồn tại.", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    // Tạo sinh viên mới
+                    Student st = new Student()
+                    {
+                        StudentID = MSSV,
+                        FullName = HoTen,
+                        FacultyID = FacultyID,
+                        AverageScore = DTB // Không cần chuyển đổi nếu DTB đã là decimal
+                    };
+                    context.Students.Add(st);
+                    context.SaveChanges(); // Lưu thay đổi vào cơ sở dữ liệu
+
+                    BindGrid(context.Students.ToList());
+                    MessageBox.Show("Thêm sinh viên thành công!", "Thông báo", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Có lỗi xảy ra: " + ex.Message, "Lỗi", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            LoadData();
+        }
+    
+    
+
+    private void toolStripLabel1_Click(object sender, EventArgs e)
+        {
+            Form2 form2 = new Form2();
+            form2.Show();
+        }
+
+        private void toolStripLabel2_Click(object sender, EventArgs e)
+        {
+            
+        }
+    }
+}
